@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Weather and Air Quality</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function getData() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(fetchData);
+            } else {
+                document.getElementById("dataOutput").innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        async function fetchData(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            // Fetch Weather Data
+            const weatherOptions = {
+                method: 'GET',
+                url: 'https://weather-by-api-ninjas.p.rapidapi.com/v1/weather',
+                params: { lat: lat, lon: lon },
+                headers: {
+                    'X-RapidAPI-Key': 'c3c27280b6msh0be71ed2aaf1f44p1541a2jsnea7fa3b5fc57',
+                    'X-RapidAPI-Host': 'weather-by-api-ninjas.p.rapidapi.com'
+                }
+            };
+
+            // Fetch Air Quality Data
+            const airQualityOptions = {
+                method: 'GET',
+                url: 'https://air-quality-by-api-ninjas.p.rapidapi.com/v1/airquality',
+                params: { lat: lat, lon: lon },
+                headers: {
+                    'X-RapidAPI-Key': 'c3c27280b6msh0be71ed2aaf1f44p1541a2jsnea7fa3b5fc57',
+                    'X-RapidAPI-Host': 'air-quality-by-api-ninjas.p.rapidapi.com'
+                }
+            };
+
+            try {
+                const weatherResponse = await axios.request(weatherOptions);
+                const airQualityResponse = await axios.request(airQualityOptions);
+
+                // Displaying the data (you can customize this part to better format the output)
+                document.getElementById("dataOutput").innerHTML = `
+                    <strong>Weather Data:</strong> ${JSON.stringify(weatherResponse.data)}<br><br>
+                    <strong>Air Quality Data:</strong> ${JSON.stringify(airQualityResponse.data)}
+                `;
+            } catch (error) {
+                document.getElementById("dataOutput").innerHTML = "Error fetching data.";
+                console.error(error);
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+    <h2>Get Weather and Air Quality Data</h2>
+    <button onclick="getData()">Get Data</button>
+    <div id="dataOutput"></div>
+
+</body>
+
+</html>
